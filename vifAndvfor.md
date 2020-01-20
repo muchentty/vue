@@ -1,1 +1,58 @@
-fsdfsd
+###v-if和v-for哪个优先级高？如果两个同时出现，应该怎么优化得到更好的性能？
+
+v-if和v-for同时使用的话v-for的优先级要比v-if的优先级高 
+
+1.过滤一个列表中的项目 (比如 v-for="user in users" v-if="user.isActive")。在这种情形下，请将 users替换为一个计算属性 (比如 activeUsers)，让其返回过滤后的列表。
+将：
+<ul>
+  <li
+    v-for="user in users"
+    v-if="user.isActive"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+
+
+换成：
+
+<ul>
+  <li
+    v-for="user in activeUsers"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+computed: {
+  activeUsers: function () {
+    return this.users.filter(function (user) {
+      return user.isActive
+    })
+  }
+}
+
+避免渲染本应该被隐藏的列表 (比如 v-for="user in users" v-if="shouldShowUsers")。这种情形下，请将 v-if 移动至容器元素上 。
+
+<ul>
+  <li
+    v-for="user in users"
+    v-if="shouldShowUsers"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+
+更新为：
+
+<ul v-if="shouldShowUsers">
+  <li
+    v-for="user in users"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+
